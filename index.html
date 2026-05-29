@@ -393,25 +393,7 @@
             </tbody>
         </table>
         <br>
-        <button onclick=" function showView(viewId) {
-        if (viewId === 'admin-screen') {
-            // 🔒 Secret Password check
-            const password = prompt("Enter Teacher Admin Password:");
-            if (password !== "chemistry2026") { // Change this to your password!
-                alert("Incorrect password. Access denied.");
-                return;
-            }
-        }
-
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('exam-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.add('hidden');
-        document.getElementById('admin-screen').classList.add('hidden');
-        document.getElementById(viewId).classList.remove('hidden');
-        if(viewId === 'admin-screen') { loadAllResults(); }
-    }
-            
-    ('start-screen')" style="background:#4a5568;">Back to Login Screen</button>
+        <button onclick="showView('start-screen')" style="background:#4a5568;">Back to Login Screen</button>
     </div>
 </div>
 
