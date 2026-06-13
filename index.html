@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 9 Chemistry DPP: Is Matter Around Us Pure</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --bg: #f8f9fa;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 700px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+
+        .hidden { display: none !important; }
+
+        .input-group {
+            margin: 20px 0;
+        }
+        label { display: block; font-weight: bold; margin-bottom: 8px; }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .rules-box {
+            background: #edf2f7;
+            padding: 15px 20px;
+            border-left: 5px solid var(--secondary);
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .rules-box ul { margin: 0; padding-left: 20px; }
+        .rules-box li { margin-bottom: 8px; font-weight: 500; }
+
+        button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        button:hover { background: #2980b9; }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        #timer {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--danger);
+            background: #fde8e8;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .question-card { margin-bottom: 25px; }
+        .question-text { font-size: 18px; font-weight: 600; margin-bottom: 15px; }
+        .options-list { list-style: none; padding: 0; }
+        .option-item {
+            background: #f1f3f5;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .option-item:hover { background: #e9ecef; }
+        .option-item.selected {
+            background: #e3f2fd;
+            border-color: var(--secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th { background-color: var(--primary); color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="container">
+        <h2>Class 9 Chemistry DPP</h2>
+        <h3>Ch 2: Is Matter Around Us Pure (Advanced)</h3>
+        
+        <div class="input-group">
+            <label for="student-name">Enter Student Name:</label>
+            <input type="text" id="student-name" placeholder="Your Full Name..." autocomplete="off">
+        </div>
+
+        <div class="rules-box">
+            <h4>⚠️ Strict Exam Rules & Regulations:</h4>
+            <ul>
+                <li><strong>Total Questions:</strong> 10 High-Level Questions.</li>
+                <li><strong>Time Limit:</strong> 40 Minutes. The exam auto-submits on timeout.</li>
+                <li><strong>Full Screen Mode:</strong> The test runs strictly in Full-Screen. Exiting full-screen will trigger an immediate auto-submit.</li>
+                <li><strong>No Cheating/Tab Switching:</strong> If you leave the window or switch tabs, your test will end instantly.</li>
+                <li><strong>Public Scoreboard:</strong> Your final score is saved locally. Scores older than 7 days are automatically wiped out.</li>
+            </ul>
+        </div>
+
+        <button onclick="startExam()">Agree & Start Examination</button>
+
+        <hr style="margin: 30px 0; border: 0; border-top: 1px solid #ccc;">
+        <h3>Global Offline Scoreboard (Last 7 Days)</h3>
+        <div style="max-height: 200px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr><th>Name</th><th>Score /10</th><th>Date Given</th></tr>
+                </thead>
+                <tbody id="global-scores"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="exam-page" class="container hidden">
+        <div class="quiz-header">
+            <div>Student: <span id="display-name" style="font-weight:bold;"></span></div>
+            <div id="timer">Time Left: 40:00</div>
+        </div>
+
+        <div id="question-container">
+            <div class="question-text" id="q-text"></div>
+            <ul class="options-list" id="options-ul"></ul>
+        </div>
+
+        <button id="next-btn" onclick="nextQuestion()">Next Question</button>
+    </div>
+
+    <div id="result-page" class="container hidden">
+        <h2>Examination Completed!</h2>
+        <div class="rules-box" style="border-color: var(--success); background: #e8f8f0;">
+            <h3>Your Performance</h3>
+            <p style="font-size: 20px;">Name: <span id="res-name" style="font-weight:bold;"></span></p>
+            <p style="font-size: 24px; color: var(--success);">Final Score: <span id="res-score" style="font-weight:bold;"></span> / 10</p>
+            <p id="cheat-notice" style="color: var(--danger); font-weight: bold; display: none;">⚠️ Test terminated early due to anti-cheating protocol violation.</p>
+        </div>
+        
+        <button onclick="window.location.reload()">Return to Main Page</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "A solution contains 50g of common salt in 350g of water. What is the mass-by-mass percentage concentration of the solution?",
+                options: ["14.28%", "12.5%", "16.67%", "11.11%"],
+                correct: 1
+            },
+            {
+                q: "Which of the following physical property configurations correctly identifies a colloidal solution showing Tyndall effect and no settling?",
+                options: ["Suspension", "True Solution", "Emulsion", "Saturated Solution"],
+                correct: 2
+            },
+            {
+                q: "Two liquids 'A' and 'B' are miscible and have boiling points 56°C and 65°C respectively. Which technique is most appropriate to separate them with minimal loss?",
+                options: ["Simple Distillation", "Fractional Distillation", "Separating Funnel", "Centrifugation"],
+                correct: 1
+            },
+            {
+                q: "An anomaly is observed where a mixture of iron filings and sulphur powder is treated with dilute HCl gas. What gas is evolved, and what happens if they are pre-heated strongly together before adding acid?",
+                options: ["Hydrogen gas; Hydrogen Sulphide gas evolved instead", "Hydrogen Sulphide gas; Hydrogen gas evolved instead", "Sulphur dioxide; chlorine gas evolved instead", "No reaction occurs in either case"],
+                correct: 0
+            },
+            {
+                q: "Which of the following represents a chemical change?",
+                options: ["Dissolving carbon dioxide in water under high pressure", "Liquefaction of air components", "Passing electric current through water to yield gases", "Sublimation of solid Ammonium Chloride"],
+                correct: 2
+            },
+            {
+                q: "During fractional crystallization, how is a pure solid substance isolated from an impure sample?",
+                options: ["By boiling off all the solvent completely", "By cooling a hot saturated solution slowly", "By adding a chemical precipitant agent", "By rapid freezing under vacuum conditions"],
+                correct: 1
+            },
+            {
+                q: "A beam of light passing through an aqueous system 'X' leaves a highly visible visible luminous path, but filtering it yields no residue. System 'X' is a:",
+                options: ["True solution", "Suspension", "Colloid", "Pure compound"],
+                correct: 2
+            },
+            {
+                q: "Identify the correct dispersed phase and dispersing medium setup for 'Fog':",
+                options: ["Gas in Liquid", "Liquid in Gas", "Gas in Solid", "Solid in Gas"],
+                correct: 1
+            },
+            {
+                q: "When a mixture of sand, iodine, and common salt is heated in a sublimation setup, what is the correct sequence of recovery?",
+                options: ["Sand sublimes first, then salt remains", "Iodine sublimes first, leaving sand and salt behind", "Salt liquefies first, then sand filters away", "Iodine converts to liquid and separates"],
+                correct: 1
+            },
+            {
+                q: "Why is water considered a pure compound rather than a homogeneous mixture?",
+                options: ["It can be broken down easily by simple filtration", "Constituents retain their original properties", "It exhibits a variable composition by mass", "Its constituent elements lose individual identities and have fixed ratios"],
+                correct: 3
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let studentName = "";
+        let timerInterval = null;
+        let totalTime = 40 * 60; 
+        let examActive = false;
+
+        window.onload = function() {
+            loadScoreboard();
+        }
+
+        function loadScoreboard() {
+            let data = JSON.parse(localStorage.getItem('dpp_scores')) || [];
+            const currentTime = new Date().getTime();
+            const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+
+            // Filter out tracking entries older than 7 days
+            data = data.filter(item => (currentTime - item.timestamp) < sevenDaysInMs);
+            localStorage.setItem('dpp_scores', JSON.stringify(data));
+
+            const tbody = document.getElementById('global-scores');
+            tbody.innerHTML = "";
+            
+            if(data.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>No records found in the last 7 days.</td></tr>";
+                return;
+            }
+
+            data.sort((a,b) => b.score - a.score);
+
+            data.forEach(item => {
+                let row = `<tr>
+                    <td>${escapeHtml(item.name)}</td>
+                    <td><strong>${item.score}</strong></td>
+                    <td><small>${item.dateString}</small></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function startExam() {
+            const input = document.getElementById('student-name');
+            studentName = input.value.trim();
+
+            if (!studentName) {
+                alert("Please enter your name before initiating the test.");
+                return;
+            }
+
+            const docElm = document.documentElement;
+            if (docElm.requestFullscreen) { docElm.requestFullscreen(); }
+            else if (docElm.mozRequestFullScreen) { docElm.mozRequestFullScreen(); }
+            else if (docElm.webkitRequestFullscreen) { docElm.webkitRequestFullscreen(); }
+            else if (docElm.msRequestFullscreen) { docElm.msRequestFullscreen(); }
+            else {
+                alert("Your browser does not support full screen required for this exam.");
+                return;
+            }
+
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('exam-page').classList.remove('hidden');
+            document.getElementById('display-name').innerText = studentName;
+            
+            examActive = true;
+            startTimer();
+            loadQuestion();
+
+            setTimeout(() => {
+                document.addEventListener('fullscreenchange', checkScreenViolation);
+                document.addEventListener('webkitfullscreenchange', checkScreenViolation);
+                window.addEventListener('blur', triggerCheatingPenalty);
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) triggerCheatingPenalty();
+                });
+            }, 1000);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                totalTime--;
+                let mins = Math.floor(totalTime / 60);
+                let secs = totalTime % 60;
+                document.getElementById('timer').innerText = `Time Left: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (totalTime <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time's Up!");
+                    finishExam(false);
+                }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            selectedOption = null;
+            const qData = questions[currentQuestionIndex];
+            document.getElementById('q-text').innerText = `Q${currentQuestionIndex + 1}. ${qData.q}`;
+            
+            const ul = document.getElementById('options-ul');
+            ul.innerHTML = "";
+
+            qData.options.forEach((opt, idx) => {
+                let li = document.createElement('li');
+                li.className = "option-item";
+                li.innerText = opt;
+                li.onclick = () => selectOption(li, idx);
+                ul.appendChild(li);
+            });
+
+            if(currentQuestionIndex === questions.length - 1) {
+                document.getElementById('next-btn').innerText = "Submit Examination";
+            } else {
+                document.getElementById('next-btn').innerText = "Next Question";
+            }
+        }
+
+        function selectOption(elem, index) {
+            const items = document.querySelectorAll('.option-item');
+            items.forEach(i => i.classList.remove('selected'));
+            elem.classList.add('selected');
+            selectedOption = index;
+        }
+
+        function nextQuestion() {
+            if (selectedOption === null) {
+                alert("Please select an answer option to proceed.");
+                return;
+            }
+
+            if (selectedOption === questions[currentQuestionIndex].correct) {
+                score++;
+            }
+
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                finishExam(false);
+            }
+        }
+
+        function checkScreenViolation() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && examActive) {
+                alert("Exiting full screen is strictly prohibited. Your exam is terminated.");
+                triggerCheatingPenalty();
+            }
+        }
+
+        function triggerCheatingPenalty() {
+            if (examActive) {
+                finishExam(true);
+            }
+        }
+
+        function finishExam(cheated = false) {
+            if (!examActive) return;
+            examActive = false;
+            clearInterval(timerInterval);
+
+            if (cheated) {
+                score = 0; 
+                document.getElementById('cheat-notice').style.display = "block";
+            }
+
+            const existingScores = JSON.parse(localStorage.getItem('dpp_scores')) || [];
+            const now = new Date();
+            
+            existingScores.push({
+                name: studentName,
+                score: score,
+                timestamp: now.getTime(),
+                dateString: now.toLocaleString()
+            });
+            localStorage.setItem('dpp_scores', JSON.stringify(existingScores));
+
+            document.getElementById('exam-page').classList.add('hidden');
+            document.getElementById('result-page').classList.remove('hidden');
+            document.getElementById('res-name').innerText = studentName;
+            document.getElementById('res-score').innerText = score;
+
+            if (document.exitFullscreen) { document.exitFullscreen().catch(()=>{}); }
+        }
+    </script>
+</body>
+</html>
